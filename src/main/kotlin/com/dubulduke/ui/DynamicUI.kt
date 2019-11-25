@@ -4,15 +4,18 @@ import com.dubulduke.ui.element.EditableElement
 import com.dubulduke.ui.element.Element
 import com.dubulduke.ui.layout.BaseLayout
 
-class DynamicUI<T>(private val viewport: Viewport, private val renderOperation: RenderDescription.(T) -> Unit) {
+class DynamicUI<T>(private val options: DynamicUIOptions<T>) {
     private var element: EditableElement<T>? = null
 
     private fun getElementInstance(renderer: T): EditableElement<T> {
-        val element = this.element ?: EditableElement(renderer)
-        this.element = element
-        element.setLayout(viewport)
-        element.setParentLayout(viewport)
-        return element
+        return this.element ?: {
+            options.setRenderer(renderer)
+            val e = EditableElement(options)
+            this.element = e
+            e.setLayout(options.viewport)
+            e.setParentLayout(options.viewport)
+            e
+        }.invoke()
     }
 
     operator fun invoke(renderer: T, block: Element.() -> Unit) {
@@ -20,23 +23,23 @@ class DynamicUI<T>(private val viewport: Viewport, private val renderOperation: 
 
         block(element)
 
-        element.render(renderOperation)
+        element.render()
 
-        recurHierarchy(renderer, element, 0)
+        recurThroughHierarchy(renderer, element, 0)
     }
 
-    private fun recurHierarchy(renderer: T, element: EditableElement<T>, depth: Int) {
+    private fun recurThroughHierarchy(renderer: T, element: EditableElement<T>, depth: Int) {
         element.reset()
         var previous: BaseLayout? = null
 
         for (child in element.children) {
             child.setPreviousLayout(previous)
             previous = child.layout
-            child.render(renderOperation)
+            child.render()
         }
 
         for (child in element.children) {
-            recurHierarchy(renderer, child, depth + 1)
+            recurThroughHierarchy(renderer, child, depth + 1)
         }
     }
 }

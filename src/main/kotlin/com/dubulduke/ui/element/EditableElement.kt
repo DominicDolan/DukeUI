@@ -1,11 +1,13 @@
 package com.dubulduke.ui.element
 
+import com.dubulduke.ui.DynamicUIOptions
 import com.dubulduke.ui.RenderDescription
 import com.dubulduke.ui.layout.Layout
 import com.dubulduke.ui.layout.BaseLayout
+import com.dubulduke.ui.layout.Point
 import com.dubulduke.ui.style.Style
 
-internal class EditableElement<T>(private val renderer: T) : Element {
+internal class EditableElement<T>(private val options: DynamicUIOptions<T>) : Element {
     val children = ArrayList<EditableElement<T>>()
     var childCounter = -1
 
@@ -14,9 +16,10 @@ internal class EditableElement<T>(private val renderer: T) : Element {
 
     private val editableLayout = Layout()
     val layout: BaseLayout = editableLayout
+//    private val outputLayout
 
     private val editableStyle = Style()
-    private val description = RenderDescription(editableStyle, editableLayout)
+    private val description = RenderDescription(options, editableStyle, editableLayout)
 
     override fun layout(setLayout: Layout.(parent: BaseLayout, previous: BaseLayout) -> Unit) {
         setLayout(editableLayout, parent, previous)
@@ -31,7 +34,7 @@ internal class EditableElement<T>(private val renderer: T) : Element {
         return if (childExistsAt(childCounter)) {
             children[childCounter].applyParentLayout(editableLayout)
         } else {
-            val e = EditableElement(renderer)
+            val e = EditableElement(options)
             children.add(e)
             e.applyParentLayout(editableLayout)
         }
@@ -56,8 +59,9 @@ internal class EditableElement<T>(private val renderer: T) : Element {
         }
     }
 
-    fun render(renderOperation: RenderDescription.(T) -> Unit) {
-        renderOperation(description, renderer)
+    fun render() {
+        options.renderOperation(description, options.renderer
+                ?: throw IllegalStateException("A rendering object has not been passed down the UI hierarchy, Unable to render element"))
     }
 
     fun reset() {
@@ -73,5 +77,19 @@ internal class EditableElement<T>(private val renderer: T) : Element {
         this.parent.copy(layout)
         this.editableLayout.copy(layout)
         return this
+    }
+
+    private inner class OutputLayout : BaseLayout {
+        override val x: Double
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        override val y: Double
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        override val width: Double
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        override val height: Double
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        override val center: Point
+            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
     }
 }
