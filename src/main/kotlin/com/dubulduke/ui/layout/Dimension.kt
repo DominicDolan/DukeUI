@@ -1,62 +1,46 @@
 package com.dubulduke.ui.layout
 
-internal class Dimension(private val isForwards: Boolean, private val viewportSize: Double) {
-    private val MINIMUM = 0
-    private val MAXIMUM = 1
+internal class Dimension {
+    private val ORIGIN = 0
+    private val END = 1
     private val SIZE = 2
     private val CENTER = 3
 
-    private val switchValues = !(isForwards && viewportSize >= 0)
-
-    private val minimumIsAtTop = switchValues
-    private val maximumIsAtTop = !switchValues
-
     private var changed = true
 
-    private var start = 0.0
-    private var end = 0.0
-
-    var minimum: Double
-        get() = start
+    var origin: Double = 0.0
         set(value) {
-            if (maximumIsAtTop) {
-                shiftPriorities(MINIMUM)
-                start = value
-            } else {
-                shiftPriorities(MAXIMUM)
-                end = value
-            }
+            prepareToSet(ORIGIN,value != field)
+            field = value
         }
 
-    var maximum: Double
-        get() = end
+    var end: Double = 0.0
         set(value) {
-            if (maximumIsAtTop) {
-                shiftPriorities(MAXIMUM)
-                end = value
-            } else {
-                shiftPriorities(MINIMUM)
-                start = value
-            }
+            prepareToSet(END,value != field)
+            field = value
         }
 
     var size: Double = 0.0
         set(value) {
-            shiftPriorities(SIZE)
+            prepareToSet(SIZE,value != field)
             field = value
         }
 
     var center: Double = 0.0
         set(value) {
-            shiftPriorities(CENTER)
+            prepareToSet(CENTER,value != field)
             field = value
         }
 
-    private var firstPriority: Int = MINIMUM
+    private var firstPriority: Int = ORIGIN
     private var secondPriority: Int = SIZE
 
+    private fun prepareToSet(newPriority: Int, hasValueChanged: Boolean) {
+        changed = hasValueChanged || (firstPriority != newPriority) || changed
+        shiftPriorities(newPriority)
+    }
+
     private fun shiftPriorities(newPriority: Int) {
-        changed = true
         if (firstPriority != newPriority) {
             secondPriority = firstPriority
         }
@@ -65,22 +49,17 @@ internal class Dimension(private val isForwards: Boolean, private val viewportSi
 
     private val output = Output(0.0, 1.0)
 
-    val outputPosition: Double
+    val calculatedOrigin: Double
         get() {
             if (changed) { set() }
-            return output.minimum
+            return output.origin
         }
 
-    val outputSize: Double
+    val calculatedSize: Double
         get() {
             if (changed) { set() }
             return output.size
         }
-
-    val outputMax: Double
-        get() = maximum
-    val outputMin: Double
-        get() = minimum
 
     private fun set() {
         val fp = firstPriority
@@ -88,40 +67,38 @@ internal class Dimension(private val isForwards: Boolean, private val viewportSi
         fun isFirstAndSecondPriority(i1: Int, i2: Int) = (fp == i1 && sp == i2) || (fp == i2 && sp == i1)
 
         when {
-            isFirstAndSecondPriority(MINIMUM, SIZE) -> {
-                output.minimum = minimum
+            isFirstAndSecondPriority(ORIGIN, SIZE) -> {
+                output.origin = origin
                 output.size = size
             }
-            isFirstAndSecondPriority(MINIMUM, MAXIMUM) -> {
-                output.minimum = minimum
-                output.size = maximum - minimum
+            isFirstAndSecondPriority(ORIGIN, END) -> {
+                output.origin = origin
+                output.size = end - origin
             }
-            isFirstAndSecondPriority(MINIMUM, CENTER) -> {
-                output.minimum = minimum
-                output.size = (center - minimum)*2.0
+            isFirstAndSecondPriority(ORIGIN, CENTER) -> {
+                output.origin = origin
+                output.size = (center - origin)*2.0
             }
-            isFirstAndSecondPriority(SIZE, MAXIMUM) -> {
+            isFirstAndSecondPriority(SIZE, END) -> {
                 output.size = size
-                output.minimum = maximum - size
+                output.origin = end - size
             }
             isFirstAndSecondPriority(SIZE, CENTER) -> {
                 output.size = size
-                output.minimum = center - size/2.0
+                output.origin = center - size/2.0
             }
-            isFirstAndSecondPriority(MAXIMUM, CENTER) -> {
-                output.size = (maximum - center)*2
-                output.minimum = maximum - output.size
+            isFirstAndSecondPriority(END, CENTER) -> {
+                output.size = (end - center)*2
+                output.origin = end - output.size
             }
         }
-        minimum = output.minimum
-        maximum = output.minimum + output.size
         changed = false
     }
 
     fun resetPriorities() {
-        firstPriority = MINIMUM
+        firstPriority = ORIGIN
         secondPriority = SIZE
     }
 
-    private inner class Output(var minimum: Double, var size: Double)
+    private inner class Output(var origin: Double, var size: Double)
 }

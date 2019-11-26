@@ -3,56 +3,85 @@ package com.dubulduke.ui.layout
 import com.dubulduke.ui.DynamicUIOptions
 
 class Layout(private val options: DynamicUIOptions<*>) : BaseLayout {
-    private val horizontal = Dimension(
-            options.xDirection == DynamicUIOptions.XDirection.RIGHT,
-            options.viewport.width)
-    private val vertical = Dimension(
-            options.yDirection == DynamicUIOptions.YDirection.UP,
-            options.viewport.height)
+    private val horizontal = Dimension()
+    private val vertical = Dimension()
+
+    private val xOriginIsLeft: Boolean
+    private val yOriginIsAtBottom: Boolean
 
     override var x: Double
-        get() = horizontal.outputPosition
+        get() = horizontal.calculatedOrigin
         set(value) {
-            horizontal.minimum = value
+            horizontal.origin = value
         }
     override var width: Double
-        get() = horizontal.outputSize
+        get() = horizontal.calculatedSize
         set(value) {
             horizontal.size = value
         }
     override var right: Double
-        get() = horizontal.outputMax
+        get() = if (xOriginIsLeft) horizontal.calculatedOrigin + horizontal.calculatedSize
+                else horizontal.calculatedOrigin
         set(value) {
-            horizontal.maximum = value
+            if (xOriginIsLeft) {
+                horizontal.end = value
+            } else {
+                horizontal.origin = value
+            }
         }
     override var left: Double
-        get() = horizontal.outputMin
+        get() = if (xOriginIsLeft) horizontal.calculatedOrigin
+                else horizontal.calculatedOrigin + horizontal.calculatedSize
         set(value) {
-            horizontal.minimum = value
+            if (xOriginIsLeft) {
+                horizontal.origin = value
+            } else {
+                horizontal.end = value
+            }
         }
 
     override var y: Double
-        get() = vertical.outputPosition
+        get() = vertical.calculatedOrigin
         set(value) {
-            vertical.minimum = value
+            vertical.origin = value
         }
     override var height: Double
-        get() = vertical.outputSize
+        get() = vertical.calculatedSize
         set(value) {
             vertical.size = value
         }
     override var top: Double
-        get() = vertical.outputMax
+        get() = if (yOriginIsAtBottom) vertical.calculatedOrigin + vertical.calculatedSize
+                else vertical.calculatedOrigin
         set(value) {
-            vertical.maximum = value
+            if (yOriginIsAtBottom) {
+                vertical.end = value
+            } else {
+                vertical.origin = value
+            }
         }
     override var bottom: Double
-        get() = vertical.outputMin
+        get() = if (yOriginIsAtBottom) vertical.calculatedOrigin
+                else vertical.calculatedOrigin + vertical.calculatedSize
         set(value) {
-            vertical.minimum = value
+            if (yOriginIsAtBottom) {
+                vertical.origin = value
+            } else {
+                vertical.end = value
+            }
         }
 
     override val center: EditablePoint = EditablePoint()
+
+    init {
+        val horizontalIsRightwards = options.xDirection == DynamicUIOptions.XDirection.RIGHT
+        val viewportWidthIsPositive = options.viewport.width >= 0
+        xOriginIsLeft = horizontalIsRightwards && viewportWidthIsPositive
+
+        val verticalIsUpwards = options.yDirection == DynamicUIOptions.YDirection.UP
+        val viewportHeightIsPositive = options.viewport.height >= 0
+        yOriginIsAtBottom = verticalIsUpwards && viewportHeightIsPositive
+    }
 
     internal fun resetPriorities() {
         horizontal.resetPriorities()
