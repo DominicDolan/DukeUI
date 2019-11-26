@@ -3,6 +3,8 @@ package com.dubulduke.ui
 import com.dubulduke.ui.element.EditableElement
 import com.dubulduke.ui.element.Element
 import com.dubulduke.ui.layout.BaseLayout
+import com.dubulduke.ui.layout.Point
+import kotlin.math.abs
 
 class DynamicUI<T>(private val options: DynamicUIOptions<T>) {
     private var element: EditableElement<T>? = null
@@ -12,7 +14,13 @@ class DynamicUI<T>(private val options: DynamicUIOptions<T>) {
             options.setRenderer(renderer)
             val e = EditableElement(options)
             this.element = e
-            e.setLayout(options.viewport)
+            e.setLayout(Viewport(
+                    options.viewport.x,
+                    options.viewport.y,
+                    abs(options.viewport.width),
+                    abs(options.viewport.height)
+                    )
+            )
             e.setParentLayout(options.viewport)
             e
         }.invoke()

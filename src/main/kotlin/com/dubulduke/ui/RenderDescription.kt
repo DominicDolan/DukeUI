@@ -19,9 +19,6 @@ class RenderDescription(
     private val signAdjustX = if(widthScale < 0.0) { options.window.width } else 0.0
     private val signAdjustY = if(heightScale < 0.0) { options.window.height } else 0.0
 
-    private val signAdjustWidth get() = if(widthScale < 0.0) { layout.width + style.adjustment.width } else 0.0
-    private val signAdjustHeight get() = if(heightScale < 0.0) { layout.height + style.adjustment.height } else 0.0
-
     private val xAdjust = options.window.x - widthScale*options.viewport.x + signAdjustX
     private val yAdjust = options.window.y - heightScale*options.viewport.y + signAdjustY
 
@@ -32,10 +29,10 @@ class RenderDescription(
         get() = (layout.y + style.adjustment.y)*heightScale + yAdjust
 
     override val width: Double
-        get() = abs(layout.width + style.adjustment.width)*widthScale
+        get() = (layout.width + style.adjustment.width)*widthScale
 
     override val height: Double
-        get() = abs(layout.height + style.adjustment.height)*heightScale
+        get() = (layout.height + style.adjustment.height)*heightScale
 
     override fun toString(): String {
         return "x: $x, y: $y, width: $width, height: $height"

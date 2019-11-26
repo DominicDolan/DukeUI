@@ -4,19 +4,17 @@ import com.dubulduke.ui.DynamicUIOptions
 import com.dubulduke.ui.RenderDescription
 import com.dubulduke.ui.layout.Layout
 import com.dubulduke.ui.layout.BaseLayout
-import com.dubulduke.ui.layout.Point
 import com.dubulduke.ui.style.Style
 
 internal class EditableElement<T>(private val options: DynamicUIOptions<T>) : Element {
     val children = ArrayList<EditableElement<T>>()
     var childCounter = -1
 
-    private val previous = Layout()
-    private val parent = Layout()
+    private val previous = Layout(options)
+    private val parent = Layout(options)
 
-    private val editableLayout = Layout()
+    private val editableLayout = Layout(options)
     val layout: BaseLayout = editableLayout
-//    private val outputLayout
 
     private val editableStyle = Style()
     private val description = RenderDescription(options, editableStyle, editableLayout)
@@ -77,19 +75,5 @@ internal class EditableElement<T>(private val options: DynamicUIOptions<T>) : El
         this.parent.copy(layout)
         this.editableLayout.copy(layout)
         return this
-    }
-
-    private inner class OutputLayout : BaseLayout {
-        override val x: Double
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val y: Double
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val width: Double
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val height: Double
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-        override val center: Point
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-
     }
 }
