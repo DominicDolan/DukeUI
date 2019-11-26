@@ -1,23 +1,43 @@
 package com.dubulduke.ui.layout
 
-internal class Dimension {
+internal class Dimension(private val isForwards: Boolean, private val viewportSize: Double) {
     private val MINIMUM = 0
     private val MAXIMUM = 1
     private val SIZE = 2
     private val CENTER = 3
 
+    private val switchValues = !(isForwards && viewportSize >= 0)
+
+    private val minimumIsAtTop = switchValues
+    private val maximumIsAtTop = !switchValues
+
     private var changed = true
 
-    var minimum: Double = 0.0
+    private var start = 0.0
+    private var end = 0.0
+
+    var minimum: Double
+        get() = start
         set(value) {
-            shiftPriorities(MINIMUM)
-            field = value
+            if (maximumIsAtTop) {
+                shiftPriorities(MINIMUM)
+                start = value
+            } else {
+                shiftPriorities(MAXIMUM)
+                end = value
+            }
         }
 
-    var maximum: Double = 0.0
+    var maximum: Double
+        get() = end
         set(value) {
-            shiftPriorities(MAXIMUM)
-            field = value
+            if (maximumIsAtTop) {
+                shiftPriorities(MAXIMUM)
+                end = value
+            } else {
+                shiftPriorities(MINIMUM)
+                start = value
+            }
         }
 
     var size: Double = 0.0
@@ -57,6 +77,11 @@ internal class Dimension {
             return output.size
         }
 
+    val outputMax: Double
+        get() = maximum
+    val outputMin: Double
+        get() = minimum
+
     private fun set() {
         val fp = firstPriority
         val sp = secondPriority
@@ -88,6 +113,8 @@ internal class Dimension {
                 output.minimum = maximum - output.size
             }
         }
+        minimum = output.minimum
+        maximum = output.minimum + output.size
         changed = false
     }
 

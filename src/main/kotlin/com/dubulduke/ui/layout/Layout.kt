@@ -1,8 +1,14 @@
 package com.dubulduke.ui.layout
 
-class Layout : BaseLayout {
-    private val horizontal = Dimension()
-    private val vertical = Dimension()
+import com.dubulduke.ui.DynamicUIOptions
+
+class Layout(private val options: DynamicUIOptions<*>) : BaseLayout {
+    private val horizontal = Dimension(
+            options.xDirection == DynamicUIOptions.XDirection.RIGHT,
+            options.viewport.width)
+    private val vertical = Dimension(
+            options.yDirection == DynamicUIOptions.YDirection.UP,
+            options.viewport.height)
 
     override var x: Double
         get() = horizontal.outputPosition
@@ -15,12 +21,12 @@ class Layout : BaseLayout {
             horizontal.size = value
         }
     override var right: Double
-        get() = x + width
+        get() = horizontal.outputMax
         set(value) {
             horizontal.maximum = value
         }
     override var left: Double
-        get() = x
+        get() = horizontal.outputMin
         set(value) {
             horizontal.minimum = value
         }
@@ -36,12 +42,12 @@ class Layout : BaseLayout {
             vertical.size = value
         }
     override var top: Double
-        get() = y + height
+        get() = vertical.outputMax
         set(value) {
             vertical.maximum = value
         }
     override var bottom: Double
-        get() = y
+        get() = vertical.outputMin
         set(value) {
             vertical.minimum = value
         }
@@ -58,6 +64,22 @@ class Layout : BaseLayout {
         this.y = other.y
         this.width = other.width
         this.height = other.height
+    }
+
+    private fun calculateTopFromOptions(): Double {
+        if (options.yDirection == DynamicUIOptions.YDirection.DOWN) {
+            if (options.viewport.height < 0) {
+                return 0.0
+            } else {
+                return 0.0
+            }
+        } else {
+            if (options.viewport.height < 0) {
+                return 0.0
+            } else {
+                return 0.0
+            }
+        }
     }
 
     inner class EditablePoint: Point {
