@@ -1,12 +1,27 @@
 package com.dubulduke.ui
 
-class DynamicUIOptions<T>(internal var renderOperation: RenderDescription.(T) -> Unit) {
+import com.dubulduke.ui.input.MouseCallback
+import com.dubulduke.ui.render.RenderDescription
+import com.dubulduke.ui.render.Renderer
+
+class DynamicUIOptions<T>(renderOperation: RenderDescription.(T) -> Unit) {
     internal var window = Viewport(0.0, 0.0, 1.0, 1.0)
         private set
     internal var viewport = Viewport(0.0, 0.0, 1.0, 1.0)
         private set
-    internal var renderer: T? = null
+    internal var renderer = Renderer(renderOperation)
         private set
+    internal var mouseCallback: MouseCallback = object : MouseCallback {
+        override val mouseX: Double
+            get() = 0.0
+        override val mouseY: Double
+            get() = 0.0
+        override val leftMouseButton: Boolean
+            get() = false
+        override val rightMouseButton: Boolean
+            get() = false
+
+    }
 
     internal var yDirection = YDirection.DOWN
         private set
@@ -36,8 +51,13 @@ class DynamicUIOptions<T>(internal var renderOperation: RenderDescription.(T) ->
         return this
     }
 
-    fun setRenderer(renderer: T): DynamicUIOptions<T> {
-        this.renderer = renderer
+    fun setMouseCallback(callback: MouseCallback): DynamicUIOptions<T> {
+        this.mouseCallback = callback
+        return this
+    }
+
+    fun setRenderObject(renderObject: T): DynamicUIOptions<T> {
+        this.renderer.renderObject = renderObject
         return this
     }
 

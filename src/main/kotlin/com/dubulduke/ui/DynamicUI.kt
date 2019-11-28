@@ -1,18 +1,17 @@
 package com.dubulduke.ui
 
-import com.dubulduke.ui.element.EditableElement
+import com.dubulduke.ui.element.RenderableElement
 import com.dubulduke.ui.element.Element
 import com.dubulduke.ui.layout.BaseLayout
-import com.dubulduke.ui.layout.Point
 import kotlin.math.abs
 
 class DynamicUI<T>(private val options: DynamicUIOptions<T>) {
-    private var element: EditableElement<T>? = null
+    private var element: RenderableElement<T>? = null
 
-    private fun getElementInstance(renderer: T): EditableElement<T> {
+    private fun getElementInstance(renderer: T): RenderableElement<T> {
         return this.element ?: {
-            options.setRenderer(renderer)
-            val e = EditableElement(options)
+            options.setRenderObject(renderer)
+            val e = RenderableElement(options)
             this.element = e
             e.setLayout(Viewport(
                     options.viewport.x,
@@ -36,7 +35,7 @@ class DynamicUI<T>(private val options: DynamicUIOptions<T>) {
         recurThroughHierarchy(renderer, element, 0)
     }
 
-    private fun recurThroughHierarchy(renderer: T, element: EditableElement<T>, depth: Int) {
+    private fun recurThroughHierarchy(renderer: T, element: RenderableElement<T>, depth: Int) {
         element.reset()
         var previous: BaseLayout? = null
 

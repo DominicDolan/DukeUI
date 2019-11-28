@@ -1,11 +1,10 @@
-package com.dubulduke.ui
+package com.dubulduke.ui.render
 
+import com.dubulduke.ui.DynamicUIOptions
 import com.dubulduke.ui.layout.Layout
 import com.dubulduke.ui.layout.BaseLayout
 import com.dubulduke.ui.style.Style
 import com.dubulduke.ui.style.BaseStyle
-import kotlin.math.abs
-import kotlin.math.sign
 
 class RenderDescription(
         options: DynamicUIOptions<*>,
