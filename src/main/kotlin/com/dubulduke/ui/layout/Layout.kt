@@ -76,11 +76,11 @@ class Layout(private val options: DynamicUIOptions<*>) : BaseLayout {
     init {
         val horizontalIsRightwards = options.xDirection == DynamicUIOptions.XDirection.RIGHT
         val viewportWidthIsPositive = options.viewport.width >= 0
-        xOriginIsLeft = horizontalIsRightwards && viewportWidthIsPositive
+        xOriginIsLeft = !(horizontalIsRightwards xor viewportWidthIsPositive)
 
         val verticalIsUpwards = options.yDirection == DynamicUIOptions.YDirection.UP
         val viewportHeightIsPositive = options.viewport.height >= 0
-        yOriginIsAtBottom = verticalIsUpwards && viewportHeightIsPositive
+        yOriginIsAtBottom = !(verticalIsUpwards xor viewportHeightIsPositive)
     }
 
     internal fun resetPriorities() {
