@@ -26,11 +26,13 @@ internal class RenderableElement<T>(private val options: DynamicUIOptions<T>) : 
     fun setPreviousLayout(layout: BaseLayout?) {
         if (layout != null) {
             previous.copy(layout)
+            isFirst = false
         } else {
             previous.x = parent.x
             previous.y = parent.y
             previous.width = 0.0
             previous.height = 0.0
+            isFirst = true
         }
     }
 

@@ -16,6 +16,9 @@ abstract class Element(options: DynamicUIOptions<*>) {
     
     internal val layout: BaseLayout = editableLayout
 
+    var isFirst: Boolean = true
+        protected set
+
     abstract val event: DynamicEvent
 
     inline fun layout(setLayout: Layout.(parent: BaseLayout, previous: BaseLayout) -> Unit) {
