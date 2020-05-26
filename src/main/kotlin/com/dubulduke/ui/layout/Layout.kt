@@ -1,8 +1,8 @@
 package com.dubulduke.ui.layout
 
-import com.dubulduke.ui.DynamicUIOptions
+import com.dubulduke.ui.UIContext
 
-class Layout(private val options: DynamicUIOptions<*>) : BaseLayout {
+class Layout(private val context: UIContext) : BaseLayout {
     private val horizontal = Dimension()
     private val vertical = Dimension()
 
@@ -74,12 +74,12 @@ class Layout(private val options: DynamicUIOptions<*>) : BaseLayout {
     override val center: EditablePoint = EditablePoint()
 
     init {
-        val horizontalIsRightwards = options.xDirection == DynamicUIOptions.XDirection.RIGHT
-        val viewportWidthIsPositive = options.viewport.width >= 0
+        val horizontalIsRightwards = context.xDirection == UIContext.XDirection.RIGHT
+        val viewportWidthIsPositive = context.viewport.width >= 0
         xOriginIsLeft = !(horizontalIsRightwards xor viewportWidthIsPositive)
 
-        val verticalIsUpwards = options.yDirection == DynamicUIOptions.YDirection.UP
-        val viewportHeightIsPositive = options.viewport.height >= 0
+        val verticalIsUpwards = context.yDirection == UIContext.YDirection.UP
+        val viewportHeightIsPositive = context.viewport.height >= 0
         yOriginIsAtBottom = !(verticalIsUpwards xor viewportHeightIsPositive)
     }
 
@@ -96,14 +96,14 @@ class Layout(private val options: DynamicUIOptions<*>) : BaseLayout {
     }
 
     private fun calculateTopFromOptions(): Double {
-        if (options.yDirection == DynamicUIOptions.YDirection.DOWN) {
-            if (options.viewport.height < 0) {
+        if (context.yDirection == UIContext.YDirection.DOWN) {
+            if (context.viewport.height < 0) {
                 return 0.0
             } else {
                 return 0.0
             }
         } else {
-            if (options.viewport.height < 0) {
+            if (context.viewport.height < 0) {
                 return 0.0
             } else {
                 return 0.0

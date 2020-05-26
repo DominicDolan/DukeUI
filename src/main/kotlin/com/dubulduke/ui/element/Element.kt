@@ -1,16 +1,16 @@
 package com.dubulduke.ui.element
 
-import com.dubulduke.ui.DynamicUIOptions
+import com.dubulduke.ui.UIContext
 import com.dubulduke.ui.event.DynamicEvent
 import com.dubulduke.ui.layout.Layout
 import com.dubulduke.ui.layout.BaseLayout
 import com.dubulduke.ui.style.Style
 
-abstract class Element(options: DynamicUIOptions<*>) {
-    protected val previous = Layout(options)
-    protected val parent = Layout(options)
+abstract class Element(val context: UIContext) {
+    protected val previous = Layout(context)
+    protected val parent = Layout(context)
 
-    protected val editableLayout = Layout(options)
+    protected val editableLayout = Layout(context)
 
     protected val editableStyle = Style()
     
@@ -28,8 +28,6 @@ abstract class Element(options: DynamicUIOptions<*>) {
     inline fun style(setStyle: Style.() -> Unit) {
         setStyle(`access$editableStyle`)
     }
-
-    abstract fun addChild() : Element
 
     @Suppress("PropertyName")
     @PublishedApi

@@ -1,19 +1,20 @@
 package com.dubulduke.ui.element
 
-import com.dubulduke.ui.DynamicUIOptions
+import com.dubulduke.ui.UIContext
 import com.dubulduke.ui.event.DynamicEvent
 import com.dubulduke.ui.render.RenderDescription
 import com.dubulduke.ui.layout.BaseLayout
 
-internal class RenderableElement<T>(private val options: DynamicUIOptions<T>) : Element(options) {
-    val children = ArrayList<RenderableElement<T>>()
+abstract class RenderableElement(context: UIContext) : Element(context) {
+    val children = ArrayList<RenderableElement>()
     private var childCounter = -1
 
-    private val renderer = options.renderer
+    private val description = RenderDescription(context, editableStyle, editableLayout)
 
-    private val description = RenderDescription(options, editableStyle, editableLayout)
+    override val event = DynamicEvent(description, context.mouseCallback)
 
-    override val event = DynamicEvent(description, options.mouseCallback)
+    val contextUserData: Any?
+        get() = context.userData
 
     fun setLayout(layout: BaseLayout) {
         editableLayout.copy(layout)
@@ -38,23 +39,50 @@ internal class RenderableElement<T>(private val options: DynamicUIOptions<T>) : 
 
     fun render() {
         event.update()
-        renderer.render(description)
+        draw(description)
     }
 
-    override fun addChild() : Element {
-        childCounter++
-        return if (childExistsAt(childCounter)) {
-            children[childCounter].applyParentLayout(editableLayout)
-        } else {
-            val e = RenderableElement(options)
-            children.add(e)
-            e.applyParentLayout(editableLayout)
+    abstract fun draw(description: RenderDescription)
+
+    inline fun <reified T> useUserData(use: (T) -> Unit) {
+        val data = contextUserData
+        if (data != null && data is T) {
+            use(data)
         }
+    }
+
+    inline fun addChild(create: (UIContext) -> RenderableElement): Element {
+        val child = incrementChild()
+        return if (child == null) {
+            val new = create(context)
+            addNewChild(new)
+            new
+        } else child
+    }
+
+
+    fun addNewChild(element: RenderableElement) {
+        if (element.context === this.context) {
+            @Suppress("UNCHECKED_CAST") // This cast will work if the two options objects are the same instance
+            children.add(element)
+        } else {
+            System.err.println("Element is not being added to the UI because it was defined in a different context")
+        }
+        element.applyParentLayout(editableLayout)
     }
 
     fun reset() {
         childCounter = -1
         editableLayout.resetPriorities()
+    }
+
+    fun incrementChild(): Element? {
+        childCounter++
+        val exists = childExistsAt(childCounter)
+        if (exists) {
+            return children[childCounter].applyParentLayout(editableLayout)
+        }
+        return null
     }
 
     private fun childExistsAt(index: Int): Boolean {

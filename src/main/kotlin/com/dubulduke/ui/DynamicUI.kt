@@ -5,37 +5,37 @@ import com.dubulduke.ui.element.Element
 import com.dubulduke.ui.layout.BaseLayout
 import kotlin.math.abs
 
-class DynamicUI<T>(private val options: DynamicUIOptions<T>) {
-    private var element: RenderableElement<T>? = null
+class DynamicUI(private val context: UIContext) {
+    private var element: RenderableElement? = null
 
-    private fun getElementInstance(renderer: T): RenderableElement<T> {
+    private fun getFirstElementInstance(): RenderableElement {
         return this.element ?: {
-            options.setRenderObject(renderer)
-            val e = RenderableElement(options)
+            val e = context.createBaseElement()
             this.element = e
             e.setLayout(Viewport(
-                    options.viewport.x,
-                    options.viewport.y,
-                    abs(options.viewport.width),
-                    abs(options.viewport.height)
+                    context.viewport.x,
+                    context.viewport.y,
+                    abs(context.viewport.width),
+                    abs(context.viewport.height)
                     )
             )
-            e.setParentLayout(options.viewport)
+            e.setParentLayout(context.viewport)
             e
         }.invoke()
     }
 
-    operator fun invoke(renderer: T, block: Element.() -> Unit) {
-        val element = getElementInstance(renderer)
+    operator fun invoke(userData: Any? = null, block: Element.() -> Unit) {
+        context.setUserData(userData)
+        val element = getFirstElementInstance()
 
         block(element)
 
         element.render()
 
-        recurThroughHierarchy(renderer, element, 0)
+        recurThroughHierarchy(element, 0)
     }
 
-    private fun recurThroughHierarchy(renderer: T, element: RenderableElement<T>, depth: Int) {
+    private fun recurThroughHierarchy(element: RenderableElement, depth: Int) {
         element.reset()
         var previous: BaseLayout? = null
 
@@ -46,7 +46,7 @@ class DynamicUI<T>(private val options: DynamicUIOptions<T>) {
         }
 
         for (child in element.children) {
-            recurThroughHierarchy(renderer, child, depth + 1)
+            recurThroughHierarchy(child, depth + 1)
         }
     }
 }

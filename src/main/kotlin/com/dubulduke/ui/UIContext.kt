@@ -1,15 +1,14 @@
 package com.dubulduke.ui
 
+import com.dubulduke.ui.element.RenderableElement
 import com.dubulduke.ui.input.MouseCallback
-import com.dubulduke.ui.render.RenderDescription
-import com.dubulduke.ui.render.Renderer
 
-class DynamicUIOptions<T>(renderOperation: RenderDescription.(T) -> Unit) {
+class UIContext(private val base: (UIContext) -> RenderableElement) {
     internal var window = Viewport(0.0, 0.0, 1.0, 1.0)
         private set
     internal var viewport = Viewport(0.0, 0.0, 1.0, 1.0)
         private set
-    internal var renderer = Renderer(renderOperation)
+    var userData: Any? = null
         private set
     internal var mouseCallback: MouseCallback = object : MouseCallback {
         override val mouseX: Double
@@ -28,37 +27,46 @@ class DynamicUIOptions<T>(renderOperation: RenderDescription.(T) -> Unit) {
     internal var xDirection = XDirection.RIGHT
         private set
 
+    fun createBaseElement() = base(this)
+
     fun setWindow(x: Double, y: Double, width: Double, height: Double,
                   yDirection: YDirection = YDirection.DOWN, xDirection: XDirection = XDirection.RIGHT)
-            : DynamicUIOptions<T> {
+            : UIContext {
         return setWindow(Viewport(x, y, width, height), yDirection, xDirection)
     }
 
     fun setWindow(window: Viewport,
-                  yDirection: YDirection = YDirection.DOWN, xDirection: XDirection = XDirection.RIGHT): DynamicUIOptions<T> {
+                  yDirection: YDirection = YDirection.DOWN, xDirection: XDirection = XDirection.RIGHT): UIContext {
         this.window = window
         this.yDirection = yDirection
         this.xDirection = xDirection
         return this
     }
 
-    fun setViewport(x: Double, y: Double, width: Double, height: Double): DynamicUIOptions<T> {
+    fun setViewport(x: Double, y: Double, width: Double, height: Double): UIContext {
         return setViewport(Viewport(x, y, width, height))
     }
 
-    fun setViewport(viewport: Viewport): DynamicUIOptions<T> {
+    fun setViewport(viewport: Viewport): UIContext {
         this.viewport = viewport
         return this
     }
 
-    fun setMouseCallback(callback: MouseCallback): DynamicUIOptions<T> {
+    fun setMouseCallback(callback: MouseCallback): UIContext {
         this.mouseCallback = callback
         return this
     }
 
-    fun setRenderObject(renderObject: T): DynamicUIOptions<T> {
-        this.renderer.renderObject = renderObject
+    fun setUserData(userData: Any?): UIContext {
+        this.userData = userData
         return this
+    }
+
+    inline fun <reified T> useUserData(use: (T) -> Unit) {
+        val data = userData
+        if (data != null && data is T) {
+            use(data)
+        }
     }
 
     enum class YDirection {
