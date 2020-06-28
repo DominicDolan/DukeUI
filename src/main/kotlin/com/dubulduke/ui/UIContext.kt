@@ -2,8 +2,10 @@ package com.dubulduke.ui
 
 import com.dubulduke.ui.element.RenderableElement
 import com.dubulduke.ui.input.MouseCallback
+import com.dubulduke.ui.render.RenderDescription
+import kotlin.math.abs
 
-class UIContext(private val base: (UIContext) -> RenderableElement) {
+class UIContext {
     internal var window = Viewport(0.0, 0.0, 1.0, 1.0)
         private set
     internal var viewport = Viewport(0.0, 0.0, 1.0, 1.0)
@@ -27,7 +29,7 @@ class UIContext(private val base: (UIContext) -> RenderableElement) {
     internal var xDirection = XDirection.RIGHT
         private set
 
-    fun createBaseElement() = base(this)
+    fun createBaseElement(): RenderableElement = BaseElement()
 
     fun setWindow(x: Double, y: Double, width: Double, height: Double,
                   yDirection: YDirection = YDirection.DOWN, xDirection: XDirection = XDirection.RIGHT)
@@ -67,6 +69,23 @@ class UIContext(private val base: (UIContext) -> RenderableElement) {
         if (data != null && data is T) {
             use(data)
         }
+    }
+
+    inner class BaseElement : RenderableElement(this) {
+
+        init {
+            val baseLayout = Viewport(
+                    viewport.x,
+                    viewport.y,
+                    abs(viewport.width),
+                    abs(viewport.height)
+            )
+
+            setLayout(baseLayout)
+            setParentLayout(viewport)
+        }
+
+        override fun draw(description: RenderDescription) { }
     }
 
     enum class YDirection {

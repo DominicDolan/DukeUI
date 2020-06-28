@@ -7,8 +7,8 @@ interface BaseLayout {
     val height: Double
     val center: Point
     val left: Double get() = x
-    val bottom: Double get() = y
-    val top: Double get() = y + height
+    val bottom: Double get() = y - height
+    val top: Double get() = y
     val right: Double get() = x + width
 
 }

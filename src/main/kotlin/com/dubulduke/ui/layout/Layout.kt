@@ -2,12 +2,14 @@ package com.dubulduke.ui.layout
 
 import com.dubulduke.ui.UIContext
 
-class Layout(private val context: UIContext) : BaseLayout {
+open class Layout(private val context: UIContext) : BaseLayout {
     private val horizontal = Dimension()
     private val vertical = Dimension()
 
-    private val xOriginIsLeft: Boolean
-    private val yOriginIsAtBottom: Boolean
+    open val parent: BaseLayout? = null
+
+    val xOriginIsLeft: Boolean
+    val yOriginIsAtBottom: Boolean
 
     override var x: Double
         get() = horizontal.calculatedOrigin
