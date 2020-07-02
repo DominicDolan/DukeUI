@@ -1,6 +1,6 @@
 package com.dubulduke.ui.event
 
-class DynamicBoolean(private val condition: () -> Boolean) {
+open class DynamicBoolean(private val condition: () -> Boolean) {
     fun update() {
         isTrue = condition()
     }

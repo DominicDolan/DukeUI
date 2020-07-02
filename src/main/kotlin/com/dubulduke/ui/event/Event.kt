@@ -1,7 +1,11 @@
 package com.dubulduke.ui.event
 
-interface Event {
-    fun onClick(callback: () -> Unit)
-    fun onClickRelease(callback: () -> Unit)
-    fun onHover(callback: () -> Unit)
+import com.dubulduke.ui.render.RenderDescription
+
+open class Event(protected val description: RenderDescription<*>) {
+
+    open fun update() { }
+    open fun load() { }
+    open fun destroy() { }
+
 }

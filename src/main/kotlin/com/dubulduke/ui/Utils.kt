@@ -1,6 +1,6 @@
 package com.dubulduke.ui
 
-import com.dubulduke.ui.layout.BaseLayout
+import com.dubulduke.ui.layout.EditLayout
 import com.dubulduke.ui.layout.Layout
 
-fun createLayout(setLayout: Layout.(parent: BaseLayout, sibling: BaseLayout) -> Unit) = setLayout
+fun createLayout(setLayout: EditLayout.(parent: Layout, sibling: Layout) -> Unit) = setLayout

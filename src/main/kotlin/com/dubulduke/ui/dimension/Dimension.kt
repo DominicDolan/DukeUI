@@ -5,6 +5,8 @@ open class Dimension(
         open val size: Double,
         protected val bottomIsLow: Boolean = true) {
 
+    constructor(bottomIsLow: Boolean = true) : this(0.0, 1.0, bottomIsLow)
+
     open val end: Double
         get() = origin + size
 
@@ -17,7 +19,4 @@ open class Dimension(
     open val top: Double
         get() = if (bottomIsLow) end
         else origin
-
-
-
 }

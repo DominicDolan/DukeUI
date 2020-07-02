@@ -1,8 +1,6 @@
 package com.dubulduke.ui.dimension
 
-class VaryingDimension(startIsLow: Boolean = true) : Dimension(
-        0.0, 1.0, startIsLow
-) {
+class VaryingDimension(startIsLow: Boolean = true) : Dimension(startIsLow) {
     private val ORIGIN = 0
     private val END = 1
     private val SIZE = 2
