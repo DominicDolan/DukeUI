@@ -11,4 +11,9 @@ interface Layout {
     val top: Double
     val right: Double
 
+    companion object {
+        operator fun invoke(setter: EditLayout.(parent: Layout, sibling: Layout) -> Unit) : LayoutSetter {
+            return BasicLayoutSetter(setter)
+        }
+    }
 }

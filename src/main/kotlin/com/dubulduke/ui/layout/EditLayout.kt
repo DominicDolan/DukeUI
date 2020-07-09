@@ -44,6 +44,20 @@ abstract class EditLayout(context: UIContext<*,*>) : Layout {
         setLayout(this, parent, sibling)
     }
 
+    fun add(layoutSetter1: LayoutSetter, layoutSetter2: LayoutSetter, layoutSetter3: LayoutSetter, layoutSetter4: LayoutSetter) {
+        add(layoutSetter1, layoutSetter2, layoutSetter3)
+        layoutSetter4.perform(this)
+    }
+    fun add(layoutSetter1: LayoutSetter, layoutSetter2: LayoutSetter, layoutSetter3: LayoutSetter) {
+        add(layoutSetter1, layoutSetter2)
+        layoutSetter3.perform(this)
+    }
+    fun add(layoutSetter1: LayoutSetter, layoutSetter2: LayoutSetter) {
+        add(layoutSetter1)
+        layoutSetter2.perform(this)
+    }
+    fun add(layoutSetter: LayoutSetter) = layoutSetter.perform(this)
+
     inline fun visualAdjustment(setVisual: Adjustment.() -> Unit) {
         setVisual(visualAdjustment)
     }
