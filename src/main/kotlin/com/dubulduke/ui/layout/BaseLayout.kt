@@ -31,4 +31,5 @@ abstract class BaseLayout(context: UIContext<*,*>) : Layout {
     override val top: Double
         get() = vertical.top
 
+    override fun toString() = Layout.toString(this)
 }

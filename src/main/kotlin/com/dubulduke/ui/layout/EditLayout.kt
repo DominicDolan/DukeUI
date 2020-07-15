@@ -40,6 +40,8 @@ abstract class EditLayout(context: UIContext<*,*>) : Layout {
 
     override val center: Center = Center()
 
+    abstract val isFirst: Boolean
+
     inline fun edit(setLayout: EditLayout.(parent: Layout, sibling: Layout) -> Unit) {
         setLayout(this, parent, sibling)
     }
@@ -92,7 +94,5 @@ abstract class EditLayout(context: UIContext<*,*>) : Layout {
         }
     }
 
-    override fun toString(): String {
-        return "x: $x, y: $y, width: $width, height: $height"
-    }
+    override fun toString() = Layout.toString(this)
 }

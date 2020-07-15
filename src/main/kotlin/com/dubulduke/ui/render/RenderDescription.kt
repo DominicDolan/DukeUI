@@ -32,7 +32,10 @@ class RenderDescription<S>(
         get() = (layout.width + layout.visualAdjustment.width)*widthScale
 
     override val height: Double
-        get() = (layout.height + layout.visualAdjustment.height)*heightScale
+        get() {
+            layout.bottom
+            return (layout.height + layout.visualAdjustment.height)*heightScale
+        }
 
     fun contains(x: Double, y: Double): Boolean {
         val p1x = min(this.x, this.x + this.width)

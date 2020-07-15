@@ -10,7 +10,7 @@ import com.dubulduke.ui.render.RenderDescription
 
 open class Element<S, E: Event>(
         val context: UIContext<S, E>,
-        protected open val renderer: ElementRenderer<S, E>
+        protected open val renderer: ElementRenderer<S, E, *>
 ) {
 
     val children: ArrayList<Element<S, E>> = ArrayList()
@@ -60,7 +60,6 @@ open class Element<S, E: Event>(
 
 
     protected open fun renderLayout(depth: Int) {
-        reset()
         var previous: Layout? = null
 
         forEachChild { child ->
@@ -74,6 +73,7 @@ open class Element<S, E: Event>(
         forEachChild { child ->
             child.renderLayout(depth + 1)
         }
+        reset()
     }
 
     private inline fun forEachChild(action: (Element<S,E>) -> Unit) {
@@ -82,9 +82,9 @@ open class Element<S, E: Event>(
         }
     }
 
-    inline fun addChildElement(create: (UIContext<S, E>) -> Element<S, E>): Element<S, E> {
+    inline fun <reified T : Element<S, E>> addChildElement(create: (UIContext<S, E>) -> T): T {
         val child = nextChild()
-        return if (child == null) {
+        return if (child == null || child !is T) {
             val new = create(context)
             addChildElement(new)
             new.event.load()
@@ -92,7 +92,7 @@ open class Element<S, E: Event>(
         } else child
     }
 
-    inline fun addChild(create: () -> ElementRenderer<S, E>): Element<S, E> {
+    inline fun <reified T : Element<S, E>> addChildRenderer(create: () -> ElementRenderer<S, E, T>): T {
         return addChildElement { context: UIContext<S, E> -> create().createElement(context) }
     }
 
@@ -140,6 +140,8 @@ open class Element<S, E: Event>(
 
 
     protected inner class ElementLayout : EditLayout(context) {
+        override val isFirst: Boolean
+            get() = this@Element.isFirst
         override val parent = RelatedLayout()
         override val sibling = RelatedLayout()
     }
@@ -157,5 +159,7 @@ open class Element<S, E: Event>(
             this.width = other.width
             this.height = other.height
         }
+
+        override fun toString() = Layout.toString(this)
     }
 }

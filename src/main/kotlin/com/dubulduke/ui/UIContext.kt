@@ -4,7 +4,7 @@ import com.dubulduke.ui.element.Element
 import com.dubulduke.ui.element.ElementData
 import com.dubulduke.ui.event.Event
 import com.dubulduke.ui.layout.BaseLayout
-import com.dubulduke.ui.render.ElementRenderer
+import com.dubulduke.ui.render.DefaultElementRenderer
 import com.dubulduke.ui.render.RenderDescription
 import kotlin.math.abs
 
@@ -62,7 +62,7 @@ class UIContext<S, E: Event>(
         }
     }
 
-    val emptyRenderer = object : ElementRenderer<S, E> {
+    val emptyRenderer = object : DefaultElementRenderer<S, E> {
         override fun draw(description: RenderDescription<S>, data: Any?) { }
 
     }

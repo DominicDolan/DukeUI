@@ -15,5 +15,7 @@ interface Layout {
         operator fun invoke(setter: EditLayout.(parent: Layout, sibling: Layout) -> Unit) : LayoutSetter {
             return BasicLayoutSetter(setter)
         }
+
+        fun toString(layout: Layout) = "layout: x: ${layout.x}, y: ${layout.y}, width: ${layout.width}, height: ${layout.height}"
     }
 }
